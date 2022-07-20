@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { holidaysActions } from '../+state/holidays.actions';
-import { fromHolidays } from '../+state/holidays.selectors';
+import { Component } from '@angular/core';
 import { Holiday } from '@eternal/holidays/model';
 import { HolidayCardComponent } from '@eternal/holidays/ui';
 import { CommonModule } from '@angular/common';
+import { HolidaysStore } from './holidays.store';
 
 @Component({
   selector: 'eternal-holidays',
@@ -17,25 +15,21 @@ import { CommonModule } from '@angular/common';
         (removeFavourite)="removeFavourite($event)"
       >
       </eternal-holiday-card>
-    </div> `,
+    </div>
+    <pre>{{ holidays$ | async | json }}</pre> `,
   standalone: true,
   imports: [CommonModule, HolidayCardComponent],
 })
-export class HolidaysComponent implements OnInit {
-  holidays$ = this.store.select(fromHolidays.selectHolidaysWithFavourite);
-
-  constructor(private store: Store) {}
-
-  ngOnInit(): void {
-    this.store.dispatch(holidaysActions.load());
-  }
+export class HolidaysComponent {
+  holidays$ = this.store.holidays$;
+  constructor(private store: HolidaysStore) {}
 
   addFavourite(id: number) {
-    this.store.dispatch(holidaysActions.addFavourite({ id }));
+    this.store.addFavourite(id);
   }
 
   removeFavourite(id: number) {
-    this.store.dispatch(holidaysActions.removeFavourite({ id }));
+    this.store.removeFavourite(id);
   }
 
   byId(index: number, holiday: Holiday) {
